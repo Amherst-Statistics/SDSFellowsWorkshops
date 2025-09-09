@@ -1,0 +1,210 @@
+---
+title: "Introduction to Regression Modelling"
+subtitle: "A Brief Overview of Linear Regression"
+author: "Casey Crary and Tyler McCord"
+date: 2025-02-21
+date-format: iso
+format: revealjs
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(boot)
+library(ggplot2)
+library(dplyr)
+library(mosaicData)
+library(ggplot2)
+library(mosaic)
+library(ggformula)
+```
+
+## What is Regression?
+
+-   Regression finds relationships between independent predictors on a continuous numeric scale
+-   Reveals more complexity than hypothesis testing
+-   ex. What are the factors that predict SAT test scores?
+
+## Our Dataset - SAT
+
+-   SAT data assembled for a statistics education journal article on the link between SAT scores and measures of educational expenditures
+-   contains data from 1994-1995
+
+```{r, echo=TRUE}
+head(SAT)
+```
+
+## Simple Linear Regression
+
+-   We can see how **one** quantitative variable impacts another quantitative variable
+-   Find a least squares regression line
+    -   Minimize the sum of squared residuals
+-   Let's try predicting `sat` (each state's average SAT score) using `expend` (expenditure per pupil in average daily attendance in public elementary and secondary schools, in thousands of US dollars)
+
+```{r, echo=TRUE}
+gf_point(data = SAT, sat ~ expend) +
+  labs(title = "Scatterplot of State Expenditure versus SAT Scores")
+```
+
+## 
+
+```{r, echo=TRUE}
+gf_point(data = SAT, sat ~ expend) +
+  labs(title = "Scatterplot of State Expenditure versus SAT Scores")
+```
+
+## Fitting the SLR Model - 1
+
+```{r, echo = TRUE}
+slr <- lm(sat ~ expend, data = SAT)    
+msummary(slr)
+```
+
+## Fitting the SLR Model - 2
+
+-   Use `lm()` to fit the model
+
+-   `msummary()` to find necessary information
+
+    -   Estimate - Coefficients for each variable, this looks like y=mx + b
+
+    -   Pr (\>\|t\|) indicates the p-value for each predictor, minimize
+
+    -   Residual standard error - every data point is, on average, this far away from the line
+
+    -   Multiple R-Squared - the amount of variation in y that is explained by x, maximize
+
+    -   F-statistic p-value - significance of the entire model, minimize
+
+## SLR Plotted
+
+```{r, echo=TRUE}
+gf_point(sat ~ expend, data = SAT) %>%
+  gf_lm() +
+  labs(title = "Scatterplot of State Expenditure versus SAT Scores") 
+```
+
+## Conditions (LINE) - 1
+
+-   Linearity: predictor(s) and response should have a linear relationship
+
+```{r, echo=TRUE}
+mplot(slr, which = 1)
+```
+
+## Conditions (LINE) - 2
+
+-   Independence: observations should be independent of each other, this has to do with experimental design
+-   Normality: We want the residuals to be normally distributed. Use a qqplot or check distribution of residuals.
+
+```{r, echo=TRUE}
+mplot(slr, which = 2)
+```
+
+## Conditions (LINE) - 3
+
+-   Equal Variance: residuals should have consistent variation
+
+```{r, echo = TRUE}
+mplot(slr, which = 1)
+```
+
+## SLR Interpretation
+
+-   Fitted equation: $\hat{sat} = -20.89*expend + 1089.29$
+
+    -   For every 1000 dollar increase in expenditure per pupil in public elementary and secondary schools, we predict SAT scores to decrease by 20.89 points
+
+    -   It doesn't make sense to interpret the intercept here.
+
+-   `expend` has a low p-value (0.0064) for `sat`
+
+    -   This p-value is less than alpha=0.05, so therefore `expend` is a significant predictor for `sat`.
+
+    -   Significance of a predictor means that it has a non-zero relationship with the response.
+
+-   Multiple R-Squared = 0.145
+
+    -   This means that 14.5% of the variability in SAT scores can be explained by our model.
+
+```{r, echo=TRUE}
+msummary(slr)
+```
+
+## Multiple Linear Regression
+
+-   Extension of SLR, with more predictors
+-   Let's fit a multiple linear regression model with 3 predictors:
+    -   `expend` - expenditure per pupil in average daily attendance in public elementary and secondary schools, 1994-95 (in thousands of US dollars)
+    -   `ratio` - average pupil/teacher ratio in public elementary and secondary schools, Fall 1994
+    -   `salary` - estimated average annual salary of teachers in public elementary and secondary schools, 1994-95 (in thousands of US dollars)
+-   We will again use `sat` as our response variable
+
+## Multicollinearity
+
+-   Sometimes, our predictors are correlated with each other, but this makes isolating each predictor's effect harder
+
+-   Let's look at each predictor's VIF score
+
+    -   We want VIF less than 5
+
+```{r, echo=TRUE}
+library(car) #load this package to use vif()
+mlr1 <- lm(sat ~ expend + ratio + salary, data = SAT)    
+vif(mlr1)
+msummary(mlr1)
+```
+
+## MLR Model 2
+
+-   Fit a model with only ratio and salary
+
+```{r, echo=TRUE}
+mlr2 <- lm(sat ~ ratio + salary, data = SAT)    
+msummary(mlr2)
+```
+
+## Model 3
+
+-   Fit a model with only salary (technically, this is a SLR model)
+
+```{r, echo=TRUE}
+mlr3 <- lm(sat ~ salary, data = SAT)    
+msummary(mlr3)
+```
+
+## Advantages of Linear Regression
+
+-   Easily interperatable
+
+-   Computational time is low
+
+-   Easy to understand
+
+## Disadvantages of Linear Regression
+
+-   Conditions
+
+-   Strongly affected by outliers
+
+-   Real-world relationships are often not 1-to-1
+
+## Different Types of Regression
+
+-   Logistic Regression for binary outcomes
+-   Polynomial Regression for non-linear relationships between variables
+-   Lasso Regression is linear regression with a penalty element
+
+## Sources
+
+-   Thanks to Chelsea Wang for help with the original slides.
+-   <https://hbr.org/2015/11/a-refresher-on-regression-analysis>
+-   <https://www.geeksforgeeks.org/add-regression-line-to-ggplot2-plot-in-r/>
+-   <https://www.statisticssolutions.com/free-resources/directory-of-statistical-analyses/assumptions-of-linear-regression/>
+-   <https://online.stat.psu.edu/stat462/node/91/>
+-   [https://medium.com/\@satyavishnumolakala/linear-regression-pros-cons-62085314aef0](https://medium.com/@satyavishnumolakala/linear-regression-pros-cons-62085314aef0){.uri}
+-   <https://www.geeksforgeeks.org/types-of-regression-techniques/>
+-   <https://www.geeksforgeeks.org/understanding-logistic-regression/>
+-   <https://www.geeksforgeeks.org/implementation-of-lasso-regression-from-scratch-using-python/>
