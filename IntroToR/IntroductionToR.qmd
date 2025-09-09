@@ -27,6 +27,7 @@ The `tidyverse` package is the most commonly used package in R, and it contains 
 #| include: FALSE
 
 library(tidyverse)
+library(mosaic)
 ```
 
 The `KidsFeet` dataset gives us information on 39 kids and their foot measurements.
