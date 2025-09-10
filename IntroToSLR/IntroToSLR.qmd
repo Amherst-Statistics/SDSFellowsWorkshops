@@ -2,7 +2,7 @@
 title: "Introduction to Regression Modelling"
 subtitle: "A Brief Overview of Linear Regression"
 author: "Casey Crary and Tyler McCord"
-date: 2025-02-21
+date: 2025-09-10
 date-format: iso
 format: revealjs
 editor: source
@@ -133,47 +133,6 @@ mplot(slr, which = 1)
 msummary(slr)
 ```
 
-## Multiple Linear Regression
-
--   Extension of SLR, with more predictors
--   Let's fit a multiple linear regression model with 3 predictors:
-    -   `expend` - expenditure per pupil in average daily attendance in public elementary and secondary schools, 1994-95 (in thousands of US dollars)
-    -   `ratio` - average pupil/teacher ratio in public elementary and secondary schools, Fall 1994
-    -   `salary` - estimated average annual salary of teachers in public elementary and secondary schools, 1994-95 (in thousands of US dollars)
--   We will again use `sat` as our response variable
-
-## Multicollinearity
-
--   Sometimes, our predictors are correlated with each other, but this makes isolating each predictor's effect harder
-
--   Let's look at each predictor's VIF score
-
-    -   We want VIF less than 5
-
-```{r, echo=TRUE}
-library(car) #load this package to use vif()
-mlr1 <- lm(sat ~ expend + ratio + salary, data = SAT)    
-vif(mlr1)
-msummary(mlr1)
-```
-
-## MLR Model 2
-
--   Fit a model with only ratio and salary
-
-```{r, echo=TRUE}
-mlr2 <- lm(sat ~ ratio + salary, data = SAT)    
-msummary(mlr2)
-```
-
-## Model 3
-
--   Fit a model with only salary (technically, this is a SLR model)
-
-```{r, echo=TRUE}
-mlr3 <- lm(sat ~ salary, data = SAT)    
-msummary(mlr3)
-```
 
 ## Advantages of Linear Regression
 
@@ -190,12 +149,6 @@ msummary(mlr3)
 -   Strongly affected by outliers
 
 -   Real-world relationships are often not 1-to-1
-
-## Different Types of Regression
-
--   Logistic Regression for binary outcomes
--   Polynomial Regression for non-linear relationships between variables
--   Lasso Regression is linear regression with a penalty element
 
 ## Sources
 
