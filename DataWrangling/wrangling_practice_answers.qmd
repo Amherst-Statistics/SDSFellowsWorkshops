@@ -1,0 +1,109 @@
+---
+title: "Session 1 Worksheet Answers"
+author: "Casey Crary and Chelsea Wang"
+date: "2025-02-24"
+date-format: iso
+format: pdf
+editor: source
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(mosaic)   
+library(tidyverse)
+library(googlesheets4)
+library(dplyr)
+```
+
+## Worksheet Questions
+
+The following challenges will help you become comfortable with data wrangling in R. We will be using datasets from the package "Edcat", which contains a variety of econometric datasets for use and manipulation in R.  Additionally, we will use the flights dataset to learn more about joins.  
+
+```{r include=FALSE}
+library(mosaic)
+library(dplyr)
+library(tidyr)
+#install.packages("Ecdat")
+library(Ecdat)
+library(tidyverse)
+library(mdsr)
+
+```
+
+1. The "Benefits" dataset considers unemployment of blue collar workers. What are the average tenures of heads of households vs. non-heads of households who receive unemployment benefits?
+
+Hint: `filter()`, `group_by()`, and `summarize()` can be useful here
+
+```{r, warning=FALSE}
+data("Benefits")
+#?Benefits
+
+Benefits %>%
+  filter(ui=="yes") %>%
+  group_by(head) %>%
+  summarize(avg_ten = mean(tenure))
+```
+
+
+2. The "Wages" dataset considers wage data for individuals between 1976 to 1982. Compare the median wages of HS educated people living in the south vs. not living in the south.
+
+Hint: use `?Wages` to make sure you know what the `lwage` variable is!
+
+```{r, warning=FALSE}
+data("Wages")
+#?Wages
+
+Wages %>%
+  filter(ed >= 12) %>%
+  group_by(south) %>%
+  summarize(med_wage = median(exp(lwage)))
+```
+
+
+3. The "LaborSupply" dataset contains information about the yearly wages of individuals between 1979 and 1988. Show the average annual incomes for each year of age, arranged in descending order by age.
+
+Hint: `mutate()` can be used to create an annual income variable, and you know how to do the rest!
+
+```{r, warning=FALSE}
+data("LaborSupply")
+#?LaborSupply
+
+LaborSupply %>%
+  mutate(hr = exp(lnhr),
+         wg = exp(lnwg),
+         ann_income = hr*wg) %>%
+  group_by(age) %>%
+  summarize(avg_ann_income = mean(ann_income)) %>%
+  arrange(desc(age))
+```
+
+
+4. Use the nycflights13 package and the flights and planes tables to answer the following questions:
+
+What is the oldest plane (specified by the tailnum variable) that flew from New York City airports in 2013?
+
+How many airplanes that flew from New York City are included in the planes table?
+
+```{r}
+library(nycflights13)
+#?flights
+#?planes
+
+
+flights |> 
+  filter(origin %in% c("LGA", "JFK")) |>
+  left_join(planes, by = join_by(tailnum)) |>
+  arrange(year.y) |>
+  head(1)
+
+flights |> 
+  filter(origin %in% c("LGA", "JFK")) |>
+  left_join(planes, by = join_by(tailnum)) |>
+  distinct(tailnum)
+```
+
+(Taken from MDSR chapter 5)
+
+We strongly recommend those interested in learning more look at chapters 4 and 5 of Modern Data Science with R.  Additionally, the exercises at the end of these chapters are very good practice.  

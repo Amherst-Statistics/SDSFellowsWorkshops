@@ -1,0 +1,255 @@
+---
+title: "Introduction to Data Wrangling"
+subtitle: "A Brief Overview of the Tidyverse"
+author: "Casey Crary and Tyler McCord"
+date: today
+date-format: iso
+format: revealjs
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(boot)
+library(ggplot2)
+library(dplyr)
+
+# TO ADD
+
+# PIPES
+
+# add section on joins???
+```
+
+## What is Data Wrangling?
+
+-   Often, datasets need manipulation before we can analyze them. We want our data to look like this
+
+| firstname | lastname | age | state |
+|-----------|----------|-----|-------|
+| Fred      | Flores   | 24  | MA    |
+| Sally     | Smith    | 31  | NY    |
+
+-   But often we get data that looks like this
+
+| firstname   | lastname     | age         | state           |
+|-------------|--------------|-------------|-----------------|
+| Fred Flores |              | Twenty-Four | MA              |
+|             | Smith, Sally | 31          | New York        |
+
+## Base R 
+
+Base R is helpful for some basic manipulation.
+
+-   Finding type of object: use 'class' function
+
+-   Common types of objects:
+
+    -   data frame, vector, matrix, character, numeric
+
+-   Test type of object (will return 'TRUE' or 'FALSE'):
+
+    -   is.numeric(), is.vector(), is.data.frame(), etc
+
+-   Convert type of object:
+
+    -   as.numeric(), as.vector(), as.data.frame(), etc
+
+
+## Packages and Basic Syntax
+
+-   The 'dplyr' and 'tidyr' packages contain more functions to help us wrangle our data
+
+    ```{r}
+    library(dplyr)
+    library(tidyr)
+    ```
+
+-   All functions follow the basic syntax:
+
+    **function(dataset, argument)**
+
+    You can reference the cheat sheet for list of functions. We'll go through the most important ones with an example.
+
+## Reading in Data
+
+-  To work with our data we need to get it into R!  To do this we will use the `readr` package.  
+
+-  The most commonly used methods from this package are `read_csv`, `read_tsv`, and `read_delim`
+
+```{r}
+#| eval: false
+#| echo: true
+my_data <- read_csv("project/data/dataset.csv")
+my_data <- read_tsv("project/data/dataset.tsv")
+my_data <- read_delim("project/data/dataset.tsv", delim = ".")
+```
+
+## Getting our Data
+
+-   We'll just be using the `CPS85` dataset from `mosaicData`. 
+
+-  We can get a nice cursory glance of the data with `glimpse` from `dplyr`.  Alternatively, we can use `head` to get the top 6 observations from a data frame.
+
+```{r}
+#| echo: true
+library(mosaicData)
+glimpse(CPS85)
+```
+
+## Examining missing data
+
+-  We also might want to look at whether we have missingness in our dataset. 
+
+-  To do this we will use `vis_miss` from the `visdat` package.
+
+```{r}
+#| echo: true
+visdat::vis_miss(CPS85)
+```
+
+## The Tidyverse
+
+- The tidyverse is a unifying framework that ties to together several R packages and makes them all "talk nice" with each other
+
+- For our purposes, we will be using dplyr.
+
+## The Piping Operator
+
+- When working in R, we use pipes.  These allow our code to look a lot better and be much easier for others and you to parse.
+
+- Without pipes, we might have:
+
+```{r}
+#| echo: true
+select(filter(presidential, year(start) > 1973 & party == "Democratic"), name)
+```
+
+## Pipes cont.
+
+- However, we can pass the data in with a pipe, instead writing:
+
+```{r}
+#| echo: true
+presidential |>
+  filter(year(start) > 1973 & party == "Democratic") |>
+  select(name)
+```
+
+
+## Selecting
+
+-  We might not need all the columns in dataset.  This is where we can `select` the columns we want.
+
+-  Maybe we only care about wage, education, sex, age, and sector.  We can make a new dataframe with just these as follows:
+
+```{r}
+#| echo: true
+library(dplyr)
+CPS85.a <- CPS85 |>
+  select(wage, educ, sex, age, sector)
+head(CPS85.a)
+```
+
+## Filtering
+
+-  Or, maybe we just want certain observations that fit a certain criteria. For this we can `filter` the data.
+
+-  Maybe we only want to look at workers in sales and with at least a high school education.
+
+```{r}
+#| echo: true
+CPS85.b <- CPS85 |>
+  select(wage, educ, sex, age, sector) |>
+  filter(sector == "sales",
+         educ >= 12)   # At least a HS education
+head(CPS85.b)
+```
+
+## Logicals for Filtering
+
+- When filtering we rely on logical statements to decide if we keep or remove an observation.  
+
+- The most common symbols we use are == (equality), != (not equal), <, >, <=, >=, and %in%.  %in% allows us to check if a variable is one of many different elements of a vector.  Last, we can combine these statements with ands and ors.  And can be done with a comma or &, while or is done with |.
+
+- A more complicated filter might look like:
+
+```{r}
+#| echo: true
+CPS85.f <- CPS85 |>
+  select(wage, educ, sex, age, sector) |>
+  filter(sex == "M", (educ >= 12 | educ < 4) & sector %in% c("sales", "service"))   
+head(CPS85.f)
+```
+
+## Mutate
+
+-  Maybe we want to use a new variable in some sort of analysis, or combine two columns into one.  `mutate` helps with this.
+
+- Let's create one called 'work_years' that specifies number of years in the workforce.
+
+```{r}
+#| echo: true
+CPS85.c <- CPS85.a |>
+  mutate(work_years = age - educ - 6)
+head(CPS85.c)
+```
+
+## Arrange
+
+-   To order our dataset in terms of a certain variable, we can use `arrange`.
+-   By default, this orders in ascending order, but we can use `desc` to order in descending order.
+
+```{r}
+#| echo: true
+CPS85.d <- CPS85.a |>
+  arrange(desc(age))
+head(CPS85.d)
+```
+
+## Group_by and Summarize
+
+-   If we want to find some summary statistics to compare distinct groups in the data, we can use `group_by` and `summarize`
+
+```{r}
+#| echo: true
+CPS85.e <- CPS85 |>
+  group_by(sex) |>
+  summarize(avg_wage = mean(wage))
+CPS85.e
+```
+
+## Grouping by Multiple Variables
+
+- We can also group by multiple variables at once.
+
+```{r}
+#| echo: true
+CPS85.f <- CPS85 |>
+  group_by(married, union) |>
+  summarize(avg_wage = mean(wage))
+CPS85.f
+```
+
+## Joining
+
+- If we have multiple tables, we can combine them using joins.  There are four of these: `inner_join`, `left_join`, `right_join`, and `full_join`.  
+
+- They all work fairly similarly, and the syntax is always the same:
+
+```{r}
+#| echo: true
+library(nycflights13)
+inner_join(flights, planes, by = join_by(tailnum)) |>
+  head(3)
+```
+
+## Extensions and Resources
+
+Can be found by googling "dplyr cheatsheet" or "tidyverse cheatsheet" 
+
+MDSR chapters 4 and 5 
+
+
