@@ -1,5 +1,5 @@
 ---
-title: "Session 1 Worksheet: Data Wrangling Basics"
+title: "Data Wrangling Practice"
 author: "Casey Crary and Tyler McCord"
 date: today
 date-format: iso
@@ -32,6 +32,8 @@ library(mdsr)
 ```
 
 1. The "Benefits" dataset considers unemployment of blue collar workers. What are the average tenures of heads of households vs. non-heads of households who receive unemployment benefits?
+
+Thought process: What do I need to filter by? Are there groups to consider? What summary statistic do I need?
 
 Hint: `glimpse()` can be helpful to get a preview of the data. Then, `filter()`, `group_by()`, and `summarize()` can be useful to find the answer.
 

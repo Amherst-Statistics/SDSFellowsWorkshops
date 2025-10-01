@@ -15,12 +15,6 @@ library(tidyverse)
 library(boot)
 library(ggplot2)
 library(dplyr)
-
-# TO ADD
-
-# PIPES
-
-# add section on joins???
 ```
 
 ## What is Data Wrangling?
@@ -71,8 +65,6 @@ Base R is helpful for some basic manipulation.
 
     **function(dataset, argument)**
 
-    You can reference the cheat sheet for list of functions. We'll go through the most important ones with an example.
-
 ## Reading in Data
 
 -  To work with our data we need to get it into R!  To do this we will use the `readr` package.  
@@ -114,7 +106,7 @@ visdat::vis_miss(CPS85)
 
 - The tidyverse is a unifying framework that ties to together several R packages and makes them all "talk nice" with each other
 
-- For our purposes, we will be using dplyr.
+- `tidyverse` is the most commonly used data science package for data manipulation and visualization
 
 ## The Piping Operator
 
@@ -246,10 +238,9 @@ inner_join(flights, planes, by = join_by(tailnum)) |>
   head(3)
 ```
 
+
 ## Extensions and Resources
 
 Can be found by googling "dplyr cheatsheet" or "tidyverse cheatsheet" 
-
-MDSR chapters 4 and 5 
 
 
