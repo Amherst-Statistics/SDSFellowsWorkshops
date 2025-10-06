@@ -4,7 +4,7 @@ format: pdf
 output:
   pdf_document: default
   html_document: default
-authors: Casey Crary and Chelsea Wang
+authors: Casey Crary and Tyler McCord
 ---
 
 ```{r setup, include=FALSE}
