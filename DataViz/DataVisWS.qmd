@@ -1,0 +1,61 @@
+---
+title: "ggformula Worksheet"
+format: pdf
+output:
+  pdf_document: default
+  html_document: default
+authors: Casey Crary and Tyler McCord
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = FALSE}
+library(mosaic)
+library(ggplot2)
+library(RColorBrewer)
+library(nasaweather)
+library(mosaicData)
+```
+
+## Aesthetics (color, size, shape, alpha)
+
+Using the `storms` data frame from the `nasaweather` package, create a scatterplot between `wind` and `pressure`, with color being used to distinguish the `type` of storm.  
+
+```{r}
+
+```
+
+## Axis Labels
+
+Save your above plot, then add appropriate axis labels
+
+```{r}
+
+```
+
+## Facets
+
+The RailTrail data set from the mosaicData package describes the usage of a rail trail in Western Massachusetts. Use these data to answer the following questions. (Hint: For information on how to use faceting and add regression lines, see MDSR, Ch 3.2.2)
+
+1. Create a scatterplot of the number of crossings per day volume against the high temperature that day  
+2. Separate your plot into facets by weekday (an indicator of weekend/holiday vs. weekday)  
+3. Add regression lines to the two facets  
+
+```{r}
+#| warning: false
+#| message: false
+
+```
+
+## Geometries (boxplot)
+
+Using the `iris` dataset make a boxplot of `Sepal.Length` across the different species.  What can you conclude?
+
+```{r}
+
+```
+
+
+

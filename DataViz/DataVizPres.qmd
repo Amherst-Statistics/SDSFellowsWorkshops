@@ -1,0 +1,139 @@
+---
+title: "Introduction to Data Visualization"
+subtitle: "A Brief Overview of ggformula"
+author: "Casey Crary and Tyler McCord"
+date: 2025-02-21
+date-format: iso
+format: revealjs
+editor: source
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(tidyverse)
+library(ggformula)
+```
+
+## What is Data Visualization?
+
+-   Data visualization is how we represent data in visual form
+-   It helps us compile a lot of information in one (or a few) graphic
+-   Distributions and relationships between variables are easy to see
+
+## Different Plots for Different Purposes
+
+-   Univariate categorical variable - bar graphs, pie charts
+
+-   Univariate numeric variable - histogram, density plot
+
+-   Bivariate with two categorical variables - table
+
+-   Bivariate with two numeric variables - scatterplot
+
+-   Bivariate with one categorical and one numeric variable - boxplot
+
+## ggplot
+
+-   We will use ggformula for creating visualizations because it is much more [powerful]{.underline} than base R or mosaic
+
+```{r, echo=TRUE}
+boxplot(Sepal.Length ~ Species, data = iris)
+```
+
+## 
+
+```{r, echo=TRUE}
+gf_boxplot(Sepal.Length ~ Species,
+           data = iris) |>
+  gf_labs(fill = "Species")
+
+```
+
+## The data we will work with
+
+-   `penguins` dataset from the **palmerpenguins** package containing body measurements for penguins on three islands in the Palmer Archipelago
+-   Data wrangling will occur before data visualization
+
+```{r, echo=TRUE}
+library(palmerpenguins) 
+library(ggthemes) 
+head(penguins)
+```
+
+## Let's Start With One Variable
+
+- Maybe we just want to look at the histogram of flipper length.  So just put the variable of interest after the ~.  
+
+```{r, echo = T}
+gf_histogram( ~ flipper_length_mm,
+         data = penguins) |>
+  gf_labs(x = "Flipper Length (mm)")
+```
+
+## Making a Scatter Plot
+
+- Similarly, we just put the y variable before the ~, then the x after it.  
+
+```{r, echo = T}
+gf_point(body_mass_g ~ flipper_length_mm,
+         data = penguins) |>
+  gf_labs(x = "Flipper Length (mm)",
+          y = "Body Mass (g)")
+```
+
+## What if we want to add another variable?
+
+- We can color by species to gain more information about the relationship
+
+
+```{r, echo = T}
+gf_point(body_mass_g ~ flipper_length_mm,
+         color = ~ species,
+         data = penguins) |>
+  gf_labs(x = "Flipper Length (mm)",
+          y = "Body Mass (g)",
+          color = "Species")
+```
+
+
+
+## Adding a line
+
+-   We used gf_smooth, but our graph looks strange because of the three different lines
+
+```{r, echo=TRUE}
+gf_point(body_mass_g ~ flipper_length_mm,
+         color = ~ species,
+         data = penguins) |>
+  gf_smooth(method = "lm", se = FALSE) |>
+  gf_labs(x = "Flipper Length (mm)",
+          y = "Body Mass (g)",
+          color = "Species")
+```
+
+## Faceting
+
+- Maybe we don't like the looks of those three lines on one plot
+
+- We can simply use the vertical bar | to facet by species
+
+```{r, echo = T}
+gf_point(body_mass_g ~ flipper_length_mm | species,
+         data = penguins) |>
+  gf_smooth(method = "lm", se = FALSE) |>
+  gf_labs(x = "Flipper Length (mm)",
+          y = "Body Mass (g)")
+```
+
+## Example
+
+![](images/Screenshot%202025-03-09%20223920.png)
+
+## Extensions and Resources
+
+Sources
+
+- <https://cran.r-project.org/web/packages/ggformula/index.html>
+
+- <https://stat2labs.sites.grinnell.edu/Handouts/rtutorials/IntroToggformula.html>
